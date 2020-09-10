@@ -68,7 +68,7 @@ USERID=$(id $USER -u)
 GROUPID=$(id $GROUP -g)
 
 # Building FLUFFI C
-for ARCH in "Intel80386" "x86-64" "ARM" "ARMaarch64"; do
+for ARCH in "x86-64"; do
 	docker run --rm -e FLUFFI_DEPS="$WITH_DEPS" --user $USERID:$GROUPID -v $(pwd)/../../core:/fluffi -v $(pwd)/build.sh:/build.sh fluffi${ARCH,,} /build.sh
 	STAT=$?
 	if [ $STAT != 0 ]
