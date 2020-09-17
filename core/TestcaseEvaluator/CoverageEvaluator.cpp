@@ -66,10 +66,10 @@ void CoverageEvaluator::processTestOutcomeDescriptor(TestOutcomeDescriptor* tod)
 	putTestEvaluationRequest->set_allocated_id(mutableTestcaseId);
 	putTestEvaluationRequest->set_allocated_parentid(mutableParentTestcaseId);
 
-	bool hasNewBlocks = false;
+	int newBlocks = 0;
 	for (FluffiBasicBlock const& fbb : tod->getTestResult().m_blocks) {
 		bool thisOneIsNew = !m_localBlockCoverageCache->isBlockInCacheAndAddItIfNot(fbb);
-		hasNewBlocks |= thisOneIsNew;
+		newBlocks += thisOneIsNew;
 		if (thisOneIsNew) {
 			LOG(INFO) << "Parent " << FluffiTestcaseID(*mutableParentTestcaseId) << " got us new coverage: " << fbb;
 		}
@@ -77,7 +77,7 @@ void CoverageEvaluator::processTestOutcomeDescriptor(TestOutcomeDescriptor* tod)
 
 	TestEvaluation eval;
 	//Every testcaes that does not yet have coverage is marked "special"
-	if (tod->getparentId().m_serviceDescriptor.m_guid != "special" && tod->getTestResult().m_exitType == ExitType::CleanExit && !hasNewBlocks) {
+	if (tod->getparentId().m_serviceDescriptor.m_guid != "special" && tod->getTestResult().m_exitType == ExitType::CleanExit && !newBlocks) {
 		eval = TestEvaluation::Discard;
 
 		//If there are no new blocks and the process terminated nicely: do not set the optional parts of this message to save network bandwich  and processing time
@@ -90,7 +90,7 @@ void CoverageEvaluator::processTestOutcomeDescriptor(TestOutcomeDescriptor* tod)
 	else {
 		eval = TestEvaluation::Keep;
 
-		putTestEvaluationRequest->set_parentratingdelta(generateParentRatingDelta(tod->getTestResult().m_exitType, hasNewBlocks, tod->getparentId().m_serviceDescriptor.m_guid == "special"));
+		putTestEvaluationRequest->set_parentratingdelta(generateParentRatingDelta(tod->getTestResult().m_exitType, newBlocks, tod->getparentId().m_serviceDescriptor.m_guid == "special"));
 
 		TestResult* mutableTestResult = new TestResult();
 		if (tod->getTestResult().m_hasFullCoverage) {
@@ -136,7 +136,7 @@ void CoverageEvaluator::processTestOutcomeDescriptor(TestOutcomeDescriptor* tod)
 	}
 }
 
-int CoverageEvaluator::generateParentRatingDelta(ExitType exitType, bool hasNewBlocks, bool isSpecial) {
+int CoverageEvaluator::generateParentRatingDelta(ExitType exitType, int newBlocks, bool isSpecial) {
 	int parentRatingDelta = 0;
 
 	if (isSpecial) {
@@ -161,8 +161,8 @@ int CoverageEvaluator::generateParentRatingDelta(ExitType exitType, bool hasNewB
 		break;
 	}
 
-	if (hasNewBlocks) {
-		parentRatingDelta += m_deltaNewBlocks;
+	if (newBlocks) {
+		parentRatingDelta += newBlocks;
 	}
 
 	return parentRatingDelta;
