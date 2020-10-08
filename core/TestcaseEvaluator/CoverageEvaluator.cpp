@@ -163,8 +163,8 @@ int CoverageEvaluator::generateParentRatingDelta(ExitType exitType, int newBlock
 	}
 
 	if (newBlocks) {
-		if (log(1+newBlocks)*50 < 1000)
-			parentRatingDelta += log(1+newBlocks)*50;
+		if (newBlocks < 200)
+			parentRatingDelta += newBlocks*5;
 		else
 			parentRatingDelta += 1000;
 	}
