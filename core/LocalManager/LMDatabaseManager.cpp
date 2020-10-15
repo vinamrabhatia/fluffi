@@ -1312,10 +1312,8 @@ bool LMDatabaseManager::addDeltaToTestcaseRating(const FluffiTestcaseID tcID, in
 }
 
 
-int LMDatabaseManager::kingForTestcase(const FluffiTestcaseID tcID) {
+int LMDatabaseManager::getRatingForTestcase(const FluffiTestcaseID tcID) {
 	PERFORMANCE_WATCH_FUNCTION_ENTRY
-
-	int preparedRatingDelta;
 
 	const char* cStrCreatorServiceDescriptorGUID = tcID.m_serviceDescriptor.m_guid.c_str();
 	unsigned long creatorGUIDLength = static_cast<unsigned long>(tcID.m_serviceDescriptor.m_guid.length());
@@ -1347,7 +1345,7 @@ int LMDatabaseManager::kingForTestcase(const FluffiTestcaseID tcID) {
 	if (mysql_stmt_execute(sql_stmt) != 0) {
 		LOG(ERROR) << "getRatingForTestcase encountered the following error: " << mysql_stmt_error(sql_stmt);
 		mysql_stmt_close(sql_stmt);
-		return re;
+		return 0;
 	}
 
 	MYSQL_BIND resultBIND[2];
@@ -1360,7 +1358,7 @@ int LMDatabaseManager::kingForTestcase(const FluffiTestcaseID tcID) {
 
 	resultBIND[0].length = &lineLengthCol0;
 
-	uint64_t rating;
+	int rating;
 
 	resultBIND[1].buffer = &(rating);
 
@@ -1390,8 +1388,6 @@ int LMDatabaseManager::kingForTestcase(const FluffiTestcaseID tcID) {
 
 		mysql_stmt_fetch_column(sql_stmt, &resultBIND[0], 0, 0);
 
-		re = rating;
-
 		delete[] responseCol0;
 
 	}
@@ -1400,7 +1396,7 @@ int LMDatabaseManager::kingForTestcase(const FluffiTestcaseID tcID) {
 	mysql_stmt_close(sql_stmt);
 
 	PERFORMANCE_WATCH_FUNCTION_EXIT("getRatingForTestcase")
-		return re;
+		return rating;
 }
 
 
