@@ -30,6 +30,7 @@ Author(s): Thomas Riedmaier, Abian Blome
 #include "GarbageCollectorWorker.h"
 #include "CommInt.h"
 #include "TEWorkerThreadState.h"
+#include <math.h>
 
 CoverageEvaluator::CoverageEvaluator(std::string testcaseDir, BlockCoverageCache* localBlockCoverageCache, GarbageCollectorWorker* garbageCollectorWorker, CommInt* commInt, TEWorkerThreadState* workerThreadState) :
 	FluffiEvaluator(testcaseDir, localBlockCoverageCache, garbageCollectorWorker, commInt, workerThreadState),
