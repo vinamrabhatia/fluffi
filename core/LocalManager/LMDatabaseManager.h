@@ -80,6 +80,7 @@ public:
 	bool addEntryToCompletedTestcasesTable(const FluffiTestcaseID tcID);
 	bool addEntryToCrashDescriptionsTable(const FluffiTestcaseID tcID, const std::string crashFootprint);
 	bool addEntryToInterestingTestcasesTable(const FluffiTestcaseID tcID, const FluffiTestcaseID tcparentID, int rating, const std::string testcaseDir, TestCaseType tcType);
+	int getRatingForTestcase(const FluffiTestcaseID tcID);
 
 	bool dropTestcaseIfCrashFootprintAppearedMoreThanXTimes(int times, std::string crashFootprint);
 	bool dropTestcaseTypeIFMoreThan(LMDatabaseManager::TestCaseType type, int instances);
