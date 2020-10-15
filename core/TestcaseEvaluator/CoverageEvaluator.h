@@ -39,7 +39,7 @@ public:
 	void processTestOutcomeDescriptor(TestOutcomeDescriptor* tod);
 
 private:
-	int generateParentRatingDelta(ExitType exitType, bool hasNewBlocks, bool isSpecial);
+	int generateParentRatingDelta(ExitType exitType, int newBlocks, bool isSpecial);
 	FluffiTestResult copyTestResultButStripDuplicateBlocks(const FluffiTestResult originalTestResult);
 	void updateTestcaseEvaluationSendTimeout(bool wasLastTransferSuccessful, TestEvaluation eval, ExitType exitType);
 
