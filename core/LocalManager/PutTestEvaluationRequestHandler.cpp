@@ -74,6 +74,7 @@ bool PutTestEvaluationRequestHandler::markTestcaseAsCompleted(LMDatabaseManager*
 
 void PutTestEvaluationRequestHandler::handleFLUFFIMessage(WorkerThreadState* workerThreadState, FLUFFIMessage* req, FLUFFIMessage* resp)
 {
+	int childrating;
 	LMWorkerThreadState* lmWorkerThreadState = dynamic_cast<LMWorkerThreadState*>(workerThreadState);
 	if (lmWorkerThreadState == nullptr) {
 		LOG(ERROR) << "PutTestEvaluationRequestHandler::handleFLUFFIMessage - workerThreadState cannot be accessed";
@@ -134,12 +135,12 @@ void PutTestEvaluationRequestHandler::handleFLUFFIMessage(WorkerThreadState* wor
 			break;
 		}
 
-		int rating = lmWorkerThreadState->dbManager->getRatingForTestcase(parentTestcaseID); 
+		childrating = lmWorkerThreadState->dbManager->getRatingForTestcase(parentTestcaseID); 
 		//Add testcase to database (Testacase file gets deleted here)
 		success = lmWorkerThreadState->dbManager->addEntryToInterestingTestcasesTable(
 			testcaseID,
 			parentTestcaseID,
-			(tcType == LMDatabaseManager::TestCaseType::Population) ? LMDatabaseManager::rating : 0,
+			(tcType == LMDatabaseManager::TestCaseType::Population) ? childrating : 0,
 			m_testcaseDir,
 			(tcType == LMDatabaseManager::TestCaseType::Population) ? LMDatabaseManager::TestCaseType::Locked : tcType);
 		if (!success) {
