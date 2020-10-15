@@ -136,6 +136,10 @@ void PutTestEvaluationRequestHandler::handleFLUFFIMessage(WorkerThreadState* wor
 		}
 
 		childrating = lmWorkerThreadState->dbManager->getRatingForTestcase(parentTestcaseID); 
+		LOG(INFO) << "childRating is" << childrating;
+		if(childrating == 0){
+			childrating = 10000;
+		}
 		//Add testcase to database (Testacase file gets deleted here)
 		success = lmWorkerThreadState->dbManager->addEntryToInterestingTestcasesTable(
 			testcaseID,
