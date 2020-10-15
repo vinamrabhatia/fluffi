@@ -134,11 +134,12 @@ void PutTestEvaluationRequestHandler::handleFLUFFIMessage(WorkerThreadState* wor
 			break;
 		}
 
+		int rating = lmWorkerThreadState->dbManager->getRatingForTestcase(parentTestcaseID); 
 		//Add testcase to database (Testacase file gets deleted here)
 		success = lmWorkerThreadState->dbManager->addEntryToInterestingTestcasesTable(
 			testcaseID,
 			parentTestcaseID,
-			(tcType == LMDatabaseManager::TestCaseType::Population) ? LMDatabaseManager::defaultInitialPopulationRating : 0,
+			(tcType == LMDatabaseManager::TestCaseType::Population) ? LMDatabaseManager::rating : 0,
 			m_testcaseDir,
 			(tcType == LMDatabaseManager::TestCaseType::Population) ? LMDatabaseManager::TestCaseType::Locked : tcType);
 		if (!success) {

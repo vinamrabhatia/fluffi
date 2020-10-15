@@ -169,7 +169,7 @@ int CoverageEvaluator::generateParentRatingDelta(ExitType exitType, int newBlock
 			parentRatingDelta += 1000;
 	}
 
-	return 0;
+	return parentRatingDelta;
 }
 
 FluffiTestResult CoverageEvaluator::copyTestResultButStripDuplicateBlocks(const FluffiTestResult originalTestResult) {

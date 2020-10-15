@@ -1311,6 +1311,99 @@ bool LMDatabaseManager::addDeltaToTestcaseRating(const FluffiTestcaseID tcID, in
 		return re;
 }
 
+
+int LMDatabaseManager::kingForTestcase(const FluffiTestcaseID tcID) {
+	PERFORMANCE_WATCH_FUNCTION_ENTRY
+
+	int preparedRatingDelta;
+
+	const char* cStrCreatorServiceDescriptorGUID = tcID.m_serviceDescriptor.m_guid.c_str();
+	unsigned long creatorGUIDLength = static_cast<unsigned long>(tcID.m_serviceDescriptor.m_guid.length());
+
+	uint64_t preparedCreatorLocalID = tcID.m_localID;
+
+	//// prepared Statement
+	MYSQL_STMT* sql_stmt = mysql_stmt_init(getDBConnection());
+
+	const char* stmt = "SELECT ParentServiceDescriptorGUID, Rating FROM interesting_testcases WHERE CreatorLocalID = ? AND CreatorServiceDescriptorGUID = ?";
+	mysql_stmt_prepare(sql_stmt, stmt, static_cast<unsigned long>(strlen(stmt)));
+
+	//params
+	MYSQL_BIND bind[2];
+	memset(bind, 0, sizeof(bind));
+
+	bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
+	bind[0].buffer = &preparedCreatorLocalID;
+	bind[0].is_null = 0;
+	bind[0].is_unsigned = true;
+	bind[0].length = NULL;
+
+	bind[1].buffer_type = MYSQL_TYPE_VAR_STRING;
+	bind[1].buffer = const_cast<char*>(cStrCreatorServiceDescriptorGUID);
+	bind[1].buffer_length = creatorGUIDLength;
+	bind[1].length = &creatorGUIDLength;
+
+	mysql_stmt_bind_param(sql_stmt, bind);
+	if (mysql_stmt_execute(sql_stmt) != 0) {
+		LOG(ERROR) << "getRatingForTestcase encountered the following error: " << mysql_stmt_error(sql_stmt);
+		mysql_stmt_close(sql_stmt);
+		return re;
+	}
+
+	MYSQL_BIND resultBIND[2];
+	memset(resultBIND, 0, sizeof(resultBIND));
+
+	unsigned long lineLengthCol0 = 0;
+
+	resultBIND[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+	resultBIND[1].buffer_type = MYSQL_TYPE_LONGLONG;
+
+	resultBIND[0].length = &lineLengthCol0;
+
+	uint64_t rating;
+
+	resultBIND[1].buffer = &(rating);
+
+	resultBIND[1].buffer_length = sizeof(rating);
+
+	mysql_stmt_bind_result(sql_stmt, resultBIND);
+
+	mysql_stmt_store_result(sql_stmt);
+	unsigned long long resultRows = mysql_stmt_num_rows(sql_stmt);
+	if (resultRows == 0) {
+		LOG(DEBUG) << "getRatingForTestcase was supposed to return a parent tc id but was not able to do so!";
+		//It's not there! Return false
+	}
+	else if (resultRows != 1) {
+		LOG(ERROR) << "getRatingForTestcase received more than one result line!";
+		//It's not there! Return false
+	}
+	else {
+		mysql_stmt_fetch(sql_stmt);
+
+		char* responseCol0 = new char[lineLengthCol0 + 1];
+		memset(responseCol0, 0, lineLengthCol0 + 1);
+
+		resultBIND[0].buffer = responseCol0;
+
+		resultBIND[0].buffer_length = lineLengthCol0;
+
+		mysql_stmt_fetch_column(sql_stmt, &resultBIND[0], 0, 0);
+
+		re = rating;
+
+		delete[] responseCol0;
+
+	}
+
+	mysql_stmt_free_result(sql_stmt);
+	mysql_stmt_close(sql_stmt);
+
+	PERFORMANCE_WATCH_FUNCTION_EXIT("getRatingForTestcase")
+		return re;
+}
+
+
 bool LMDatabaseManager::addBlocksToCoveredBlocks(const FluffiTestcaseID tcID, const std::set<FluffiBasicBlock>& basicBlocks) { //in order to prevent deadlocks, the basic blocks need to be inserted in a sorted order. Therefore a set (which is soted) is used to pass the basicBlocks
 	PERFORMANCE_WATCH_FUNCTION_ENTRY
 
