@@ -30,6 +30,7 @@ Author(s): Thomas Riedmaier, Abian Blome
 #include "GarbageCollectorWorker.h"
 #include "CommInt.h"
 #include "TEWorkerThreadState.h"
+#include <math.h>
 
 CoverageEvaluator::CoverageEvaluator(std::string testcaseDir, BlockCoverageCache* localBlockCoverageCache, GarbageCollectorWorker* garbageCollectorWorker, CommInt* commInt, TEWorkerThreadState* workerThreadState) :
 	FluffiEvaluator(testcaseDir, localBlockCoverageCache, garbageCollectorWorker, commInt, workerThreadState),
@@ -74,7 +75,7 @@ void CoverageEvaluator::processTestOutcomeDescriptor(TestOutcomeDescriptor* tod)
 			LOG(INFO) << "Parent " << FluffiTestcaseID(*mutableParentTestcaseId) << " got us new coverage: " << fbb;
 		}
 	}
-	LOG(INFO) << "Parent " << FluffiTestcaseID(*mutableParentTestcaseId) << " got us total new coverage: " << newBlocks;
+	LOG(INFO) << "Parent " << FluffiTestcaseID(*mutableParentTestcaseId) << " got us total new coverage: (LogMultiply50)" << newBlocks;
 
 	TestEvaluation eval;
 	//Every testcaes that does not yet have coverage is marked "special"
