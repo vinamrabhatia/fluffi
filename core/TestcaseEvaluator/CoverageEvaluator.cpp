@@ -75,7 +75,7 @@ void CoverageEvaluator::processTestOutcomeDescriptor(TestOutcomeDescriptor* tod)
 			LOG(INFO) << "Parent " << FluffiTestcaseID(*mutableParentTestcaseId) << " got us new coverage: " << fbb;
 		}
 	}
-	LOG(INFO) << "Parent " << FluffiTestcaseID(*mutableParentTestcaseId) << " got us total new coverage: " << newBlocks;
+	LOG(INFO) << "Parent " << FluffiTestcaseID(*mutableParentTestcaseId) << " got us total new coverage: (Child_Log_Multiply_50)" << newBlocks;
 
 	TestEvaluation eval;
 	//Every testcaes that does not yet have coverage is marked "special"
